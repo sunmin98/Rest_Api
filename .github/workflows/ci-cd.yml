@@ -11,12 +11,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Node.js 20
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Node.js 20
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -25,10 +25,10 @@ jobs:
         run: npm test
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3 # Node.js 20
 
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4 # Node.js 20
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -36,15 +36,15 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Set up Docker registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3 # Node.js 20
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha:8 }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha:8 }}
 
   deploy:
     needs: build
@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha }}
+            docker pull ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha:8 }}
             docker stop todo-app || true
             docker rm todo-app || true
-            docker run -d --name todo-app -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha }}
+            docker run -d --name todo-app -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha:8 }}
