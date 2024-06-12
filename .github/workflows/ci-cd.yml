@@ -53,7 +53,7 @@ jobs:
       - name: SSH into server and run Docker Compose
         run: |
           SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-8)
-          ssh -o StrictHostKeyChecking=no sun@192.168.1.25 <<EOF
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} -p ${{ secrets.SERVER_PORT }} <<EOF
             docker pull ${{ secrets.DOCKER_USERNAME }}/todo-app:$SHORT_SHA
             docker stop todo-app || true
             docker rm todo-app || true
