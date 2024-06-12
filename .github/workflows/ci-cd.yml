@@ -53,7 +53,7 @@ jobs:
       - name: SSH into server and run Docker Compose
         run: |
           ssh -o StrictHostKeyChecking=no sun@192.168.50.48 <<EOF
-            cd /Users/sun/IdeaProjects/REST_API
+            cd ~/IdeaProjects/REST_API
             docker-compose down
             docker-compose pull
             docker-compose up -d
