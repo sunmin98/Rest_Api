@@ -9,9 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      SHORT_SHA: ${{ github.sha }} # Set the short SHA environment variable
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4 # Node.js 20
@@ -46,16 +43,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          SHORT_SHA=${{ env.SHORT_SHA:0:8 }}
+          SHORT_SHA=${GITHUB_SHA::8}
           docker build -t ${{ secrets.DOCKER_USERNAME }}/todo-app:$SHORT_SHA .
           docker push ${{ secrets.DOCKER_USERNAME }}/todo-app:$SHORT_SHA
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    env:
-      SHORT_SHA: ${{ github.sha }} # Set the short SHA environment variable
 
     steps:
       - name: SSH into server and run Docker container
@@ -66,7 +60,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            SHORT_SHA=${{ env.SHORT_SHA:0:8 }}
+            SHORT_SHA=${GITHUB_SHA::8}
             docker pull ${{ secrets.DOCKER_USERNAME }}/todo-app:$SHORT_SHA
             docker stop todo-app || true
             docker rm todo-app || true
