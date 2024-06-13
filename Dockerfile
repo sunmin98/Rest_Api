@@ -1,18 +1,20 @@
-# Node.js 이미지를 베이스로 설정
+# Base image
 FROM node:14
 
-# 작업 디렉토리 설정
+# Set working directory
 WORKDIR /app
 
-# 앱 의존성 설치
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# 앱 소스 복사
+# Copy application code
 COPY . .
 
-# 환경 변수 파일 복사
-COPY .env .env
+# Expose port
+EXPOSE 3001
 
-# 애플리케이션 실행
+# Run the application
 CMD ["node", "index.js"]

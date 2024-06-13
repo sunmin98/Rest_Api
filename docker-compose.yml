@@ -1,30 +1,22 @@
-version: '3.1'
+version: '3.8'
 
 services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - REDIRECT_URI=${REDIRECT_URI}
+    depends_on:
+      - db
+
   db:
     image: mysql:5.7
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: tjsals6092
       MYSQL_DATABASE: todoapp
     ports:
-      - 3306:3306
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-
-  todo-app:
-    image: sunmin980130/todo-app:latest
-    restart: always
-    ports:
-      - 3001:3001
-    environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: tjsals6092
-      DB_NAME: todoapp
-    depends_on:
-      - db
+      - "3306:3306"
